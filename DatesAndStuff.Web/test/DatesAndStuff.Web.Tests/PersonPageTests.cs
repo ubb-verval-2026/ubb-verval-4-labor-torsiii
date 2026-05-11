@@ -111,7 +111,7 @@ public class PersonPageTests
 
         var input = wait.Until(ExpectedConditions.ElementExists(By.XPath("//*[@data-test='SalaryIncreasePercentageInput']")));
         input.Clear();
-        input.SendKeys("5");
+        input.SendKeys(percentage);
 
         // Act
         var submitButton = wait.Until(ExpectedConditions.ElementExists(By.XPath("//*[@data-test='SalaryIncreaseSubmitButton']")));
@@ -121,7 +121,41 @@ public class PersonPageTests
         // Assert
         var salaryLabel = wait.Until(ExpectedConditions.ElementExists(By.XPath("//*[@data-test='DisplayedSalary']")));
         var salaryAfterSubmission = double.Parse(salaryLabel.Text);
-        salaryAfterSubmission.Should().BeApproximately(5250, 0.001);
+        salaryAfterSubmission.Should().BeApproximately(expectedSalary, 0.001);
+    }
+
+    [Test]
+    public void Person_SalaryIncreaseBelowMinusTen_ShouldDisplayValidationErrors()
+    {
+        // Arrange
+        driver.Navigate().GoToUrl(BaseURL);
+        driver.FindElement(By.XPath("//*[@data-test='PersonPageNavigation']")).Click();
+
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+
+        var input = wait.Until(ExpectedConditions.ElementExists(
+            By.XPath("//*[@data-test='SalaryIncreasePercentageInput']")));
+
+        input.Clear();
+        input.SendKeys("-15");
+
+        // Act
+        var submitButton = wait.Until(ExpectedConditions.ElementExists(
+            By.XPath("//*[@data-test='SalaryIncreaseSubmitButton']")));
+
+        submitButton.Click();
+
+        // Assert - top validation summary
+        var validationSummary = wait.Until(ExpectedConditions.ElementExists(
+            By.XPath("//*[contains(@class,'validation-summary-errors')]")));
+
+        validationSummary.Text.Should().NotBeNullOrWhiteSpace();
+
+        // Assert - field validation error
+        var fieldValidationError = wait.Until(ExpectedConditions.ElementExists(
+            By.XPath("//*[contains(@class,'validation-message')]")));
+
+        fieldValidationError.Text.Should().NotBeNullOrWhiteSpace();
     }
     private bool IsElementPresent(By by)
     {
