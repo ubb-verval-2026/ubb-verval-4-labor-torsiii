@@ -97,8 +97,11 @@ public class PersonPageTests
         Assert.That(verificationErrors.ToString(), Is.EqualTo(""));
     }
 
-    [Test]
-    public void Person_SalaryIncrease_ShouldIncrease()
+    [TestCase("5", 5250)]
+    [TestCase("10", 5500)]
+    [TestCase("20", 6000)]
+    [TestCase("50", 7500)]
+    public void Person_SalaryIncrease_ShouldIncrease(string percentage, double expectedSalary)
     {
         // Arrange
         driver.Navigate().GoToUrl(BaseURL);
