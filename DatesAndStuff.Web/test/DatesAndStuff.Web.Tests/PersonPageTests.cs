@@ -111,6 +111,8 @@ public class PersonPageTests
 
         var input = wait.Until(ExpectedConditions.ElementExists(By.XPath("//*[@data-test='SalaryIncreasePercentageInput']")));
         input.Clear();
+        input.SendKeys(Keys.Control + "a");
+        input.SendKeys(Keys.Backspace);
         input.SendKeys(percentage);
 
         // Act
@@ -137,6 +139,8 @@ public class PersonPageTests
             By.XPath("//*[@data-test='SalaryIncreasePercentageInput']")));
 
         input.Clear();
+        input.SendKeys(Keys.Control + "a");
+        input.SendKeys(Keys.Backspace);
         input.SendKeys("-15");
 
         // Act
@@ -171,6 +175,8 @@ public class PersonPageTests
             By.XPath("//*[@data-test='SalaryIncreasePercentageInput']")));
 
         input.Clear();
+        input.SendKeys(Keys.Control + "a");
+        input.SendKeys(Keys.Backspace);
         input.SendKeys("-10");
 
         // Act
@@ -187,6 +193,32 @@ public class PersonPageTests
         salaryAfterSubmission.Should().BeApproximately(4500, 0.001);
     }
 
+    [Test]
+    public void BlazeDemo_MexicoCityToDublin_ShouldHaveAtLeastThreeFlights()
+    {
+        // Arrange
+        driver.Navigate().GoToUrl("https://blazedemo.com");
+
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+
+        var fromPort = wait.Until(ExpectedConditions.ElementExists(By.Name("fromPort")));
+        var toPort = wait.Until(ExpectedConditions.ElementExists(By.Name("toPort")));
+
+        new SelectElement(fromPort).SelectByText("Mexico City");
+        new SelectElement(toPort).SelectByText("Dublin");
+
+        // Act
+        var findFlightsButton = wait.Until(ExpectedConditions.ElementExists(
+            By.XPath("//input[@value='Find Flights']")));
+
+        findFlightsButton.Click();
+
+        // Assert
+        var flightRows = wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(
+            By.XPath("//table/tbody/tr")));
+
+        flightRows.Count.Should().BeGreaterThanOrEqualTo(3);
+    }
 
     private bool IsElementPresent(By by)
     {
